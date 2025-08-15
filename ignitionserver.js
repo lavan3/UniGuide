@@ -9,13 +9,13 @@ async function retrieveFileData(path) {
     var contents, status, contentType;
     
     try {
-        contents = await Deno.readFile("./www" + path);
+        contents = await Deno.readFile("./" + path);
         status = status_OK;
         contentType = "text/html"; // temporary placeholder-- might not be necessary
     } catch (error) {
         contents = `<html>
                     <head>
-                    <title>${title}</title>
+                    <title>Page not found</title>
                     </head>
                     <body>
                     <h1>Page not found</h1>
