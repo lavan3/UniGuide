@@ -1,6 +1,7 @@
 
 // Ignition Hacks v6
-// Basic Deno server
+// Basic Deno server for serving static web pages
+// run using command: deno --allow-read --allow-net ignitionserver.js
 
 const status_NOT_FOUND = 404;
 const status_OK = 200;
@@ -27,24 +28,26 @@ async function retrieveFileData(path) {
     return { contents, status, contentType };
 }
 
-async function handler(req) {
+async function handler(request) {
 
-    var originalPath = new URL(req.url).pathname;    
+    var originalPath = new URL(request.url).pathname;    
     var path = originalPath;
     
     if (path === "/") {
         path = "/index.html";
     }
     
-    var r = await retrieveFileData(path);
+    var response = await retrieveFileData(path);
 
-    console.log(`${r.status} ${req.method} ${r.contentType} ${originalPath}`); 
+    console.log(`${response.status} ${request.method} ${originalPath} ${path}`); 
 
-    return new Response(r.contents,
-                        {status: r.status,
-                         headers: {
-                             "content-type": r.contentType,
-                         }});
+    return new Response(response.contents, {status: 
+                                        response.status,
+                                        headers: {
+                                            "content-type": response.contentType
+                                        }
+                                    }
+    );
 }
 
 Deno.serve(handler);
