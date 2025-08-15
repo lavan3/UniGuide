@@ -1,7 +1,7 @@
 
 // Ignition Hacks v6
 // Basic Deno server for serving static web pages
-// run using command: deno --allow-read --allow-net ignitionserver.js
+// run using command: deno run --allow-read --allow-net ignitionserver.js
 
 const status_NOT_FOUND = 404;
 const status_OK = 200;
