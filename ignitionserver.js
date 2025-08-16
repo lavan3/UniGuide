@@ -2,6 +2,7 @@
 // Ignition Hacks v6
 // Basic Deno server for serving static web pages
 // run using command: deno run --allow-read --allow-net --allow-env ignitionserver.js
+// Requires having the GROQ_API_KEY environment variable bound in shell
 
 import Groq from "groq-sdk";
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
@@ -11,12 +12,12 @@ const status_OK = 200;
 const status_NOT_IMPLEMENTED = 501;
 
 // groq API implementation how-to: https://console.groq.com/docs/quickstart
-async function getGroqChatCompletion() {
+async function getGroqChatCompletion(userInput) {
   return groq.chat.completions.create({
     messages: [
       {
         role: "user",
-        content: "List resources related to academic support for computer science majors at Waterloo University", // customize this based on user-input
+        content: userInput, // customize this based on user-input
       },
     ],
     model: "openai/gpt-oss-20b",
@@ -57,13 +58,20 @@ async function route(request, path) {
 
     } else if (request.method === "POST") {
         if (path === "/sendPrompt") {
-            const chatCompletion = await getGroqChatCompletion();
+            var body = await request.formData();
+            var input = body.get("aiprompt");
+            var contentInit = "";
+            // console.log(input);
+            const chatCompletion = await getGroqChatCompletion(input);
             // Print the completion to console -- need to change this into response that gets returned to user
-            console.log(chatCompletion.choices[0]?.message?.content || "");
+            // console.log(chatCompletion.choices[0]?.message?.content || "");
             // console.log(chatCompletion); // test
-        
+            if (chatCompletion.choices[0]?.message?.content) {
+                contentInit = chatCompletion.choices[0]?.message?.content.replace(/[^a-zA-Z0-9*.:|,\- \n]/g, "_");
+            }
+            
             return {
-            contents: "Successful connection to Groq",
+            contents: contentInit,
             status: status_OK,
             contentType: "text/plain"
             };
