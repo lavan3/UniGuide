@@ -10,17 +10,17 @@ So we wanted to answer the question "How do we make university resources more ac
 
 ## What it does
 UniGuide is an web app that helps students identify the specific resources they need
--An interactive quiz helps students focus in on the type of support best suited to the task
--Based on student input, relevant resources are presented an organized, curated manner
--With our app, students will be able to access university resources more efficiently and effectively
+- An interactive quiz helps students focus in on the type of support best suited to the task
+- Based on student input, relevant resources are presented an organized, curated manner
+- With our app, students will be able to access university resources more efficiently and effectively
 
 ## How we built it
 Server-Side JavaScript Runtime: 
--Deno
+- Deno
 Front-End UI and JavaScript: 
--HTML, CSS, React
+- HTML, CSS, React
 Information retrieval: 
--Groq AI API
+- Groq AI API
 
 ## Challenges we ran into
 Connecting the backend AI api to the frontend components.
