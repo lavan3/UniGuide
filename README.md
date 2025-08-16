@@ -1,11 +1,11 @@
 # UniGuide
 ## Inspiration
 As students, we know first hand how frustrating and overwhelming to know what university supports and resources are available for your specific situation. 
--University websites are notoriously clunky and difficult to navigate
--Information can be scattered
--Too much info all at once
--AI tools and search engines require knowing the right questions to ask!
--Academic advisors and student help desks can be less convenient or even a barrier for some students
+- University websites are notoriously clunky and difficult to navigate
+- Information can be scattered
+- Too much info all at once
+- AI tools and search engines require knowing the right questions to ask!
+- Academic advisors and student help desks can be less convenient or even a barrier for some students
 So we wanted to answer the question "How do we make university resources more accessible for all students?"
 
 ## What it does
