@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniGuide - University Resource Assistant</title>
+    <script src="./chatbotresponse.js" defer></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: rgb(250, 128, 114);
+            color: rgb(45, 0, 1);
+            min-height: 100vh;
+        }
+
+        .container {
+            min-height: 100vh;
+            background-color: rgb(250, 128, 114);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem;
+            border-bottom: 2px solid rgb(45, 0, 1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-svg {
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+        }
+
+        .logo-title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: rgb(45, 0, 1);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: none;
+            border: none;
+            color: rgb(45, 0, 1);
+            font-weight: 500;
+            cursor: pointer;
+            padding: 0.75rem 1rem;
+            transition: color 0.2s;
+            font-size: 1.125rem;
+            border-radius: 0.5rem;
+        }
+
+        .nav-button:hover {
+            color: rgb(120, 50, 50);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .home-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 140px);
+            padding: 2rem;
+        }
+
+        .app-title {
+            font-size: 6rem;
+            font-weight: bold;
+            margin-bottom: 4rem;
+            color: rgb(45, 0, 1);
+            text-align: center;
+            min-height: 6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .cursor {
+            animation: blink 1s infinite;
+            color: rgb(45, 0, 1);
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .main-card {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 3rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            max-width: 600px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .main-question {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            color: rgb(45, 0, 1);
+            text-align: center;
+        }
+
+        .form-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .dropdown-container {
+            position: relative;
+            flex: 1;
+        }
+
+        .dropdown-button {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background: rgba(255, 255, 255, 0.3);
+            border: 2px solid rgb(45, 0, 1);
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: rgb(45, 0, 1);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .dropdown-button:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .dropdown-arrow {
+            transition: transform 0.2s;
+            font-size: 0.875rem;
+        }
+
+        .dropdown-arrow.open {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            margin-top: 0.5rem;
+            background: white;
+            border: 2px solid rgb(45, 0, 1);
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+            z-index: 10;
+            overflow: hidden;
+        }
+
+        .dropdown-item {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            text-align: left;
+            color: rgb(45, 0, 1);
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-weight: 500;
+        }
+
+        .dropdown-item:hover {
+            background-color: rgba(250, 128, 114, 0.2);
+        }
+
+        .submit-button {
+            padding: 1rem;
+            background-color: rgb(45, 0, 1);
+            color: rgb(250, 128, 114);
+            border: none;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            min-width: 60px;
+        }
+
+        .submit-button:hover:not(:disabled) {
+            background-color: rgb(100, 30, 30);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .submit-button:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .questions-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 140px);
+            padding: 2rem;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .progress-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: rgb(45, 0, 1);
+        }
+
+        .progress-category {
+            font-size: 1rem;
+            color: rgb(100, 30, 30);
+            text-transform: capitalize;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 9999px;
+            height: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-bar {
+            background-color: rgb(45, 0, 1);
+            height: 0.5rem;
+            border-radius: 9999px;
+            transition: width 0.3s;
+        }
+
+        .question-text {
+            font-size: 1.375rem;
+            margin-bottom: 1.5rem;
+            color: rgb(45, 0, 1);
+            font-weight: 500;
+        }
+
+        .answer-textarea {
+            width: 100%;
+            height: 8rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.5);
+            border: 2px solid rgb(45, 0, 1);
+            border-radius: 0.75rem;
+            color: rgb(45, 0, 1);
+            resize: none;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .answer-textarea:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.7);
+            box-shadow: 0 0 0 3px rgba(45, 0, 1, 0.1);
+        }
+
+        .answer-textarea::placeholder {
+            color: rgb(120, 50, 50);
+        }
+
+        .button-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+        }
+
+        .secondary-button {
+            padding: 0.875rem 1.5rem;
+            background: rgba(255, 255, 255, 0.3);
+            border: 2px solid rgb(45, 0, 1);
+            color: rgb(45, 0, 1);
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .secondary-button:hover {
+            background: rgba(255, 255, 255, 0.5);
+            transform: translateY(-1px);
+        }
+
+        .primary-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.875rem 1.5rem;
+            background-color: rgb(45, 0, 1);
+            color: rgb(250, 128, 114);
+            border: none;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .primary-button:hover:not(:disabled) {
+            background-color: rgb(100, 30, 30);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .primary-button:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results-page {
+            min-height: calc(100vh - 140px);
+            padding: 3rem 2rem;
+        }
+
+        .results-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .results-title {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: rgb(45, 0, 1);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .no-matches-notice {
+            background: rgba(255, 193, 7, 0.2);
+            border: 2px solid rgb(255, 193, 7);
+            border-radius: 0.75rem;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            color: rgb(45, 0, 1);
+            font-weight: 500;
+        }
+
+        .results-subtitle {
+            font-size: 1.375rem;
+            color: rgb(100, 30, 30);
+            font-weight: 500;
+        }
+
+        .resources-grid {
+            display: grid;
+            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            margin-bottom: 2rem;
+        }
+
+        .resource-card {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+        }
+
+        .resource-card:hover {
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .resource-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: rgb(45, 0, 1);
+        }
+
+        .resource-description {
+            color: rgb(100, 30, 30);
+            line-height: 1.5;
+        }
+
+        .center-button {
+            text-align: center;
+        }
+
+        .large-button {
+            padding: 1rem 2rem;
+            background-color: rgb(45, 0, 1);
+            color: rgb(250, 128, 114);
+            border: none;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            font-size: 1.125rem;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+
+        .large-button:hover {
+            background-color: rgb(100, 30, 30);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .secondary-large {
+            background: rgba(255, 255, 255, 0.3);
+            color: rgb(45, 0, 1);
+            border: 2px solid rgb(45, 0, 1);
+        }
+
+        .secondary-large:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .header {
+                padding: 1.5rem 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .logo-title {
+                font-size: 1.5rem;
+            }
+            
+            .nav {
+                gap: 1rem;
+            }
+            
+            .nav-button {
+                font-size: 1rem;
+                padding: 0.5rem 0.75rem;
+            }
+            
+            .app-title {
+                font-size: 3.5rem;
+                margin-bottom: 2rem;
+            }
+            
+            .main-card {
+                padding: 2rem;
+                margin: 0 1rem;
+            }
+            
+            .main-question {
+                font-size: 1.5rem;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .dropdown-container {
+                width: 100%;
+            }
+            
+            .results-title {
+                font-size: 2.5rem;
+            }
+            
+            .progress-title {
+                font-size: 1.25rem;
+            }
+            
+            .question-text {
+                font-size: 1.125rem;
+            }
+            
+            .button-row {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .secondary-button, .primary-button {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .resources-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .center-button {
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+                align-items: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .app-title {
+                font-size: 2.5rem;
+            }
+            
+            .main-card {
+                padding: 1.5rem;
+            }
+            
+            .main-question {
+                font-size: 1.25rem;
+            }
+            
+            .results-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Hard-coded resources database. cahnge as per needs of uni specific resources
+        const RESOURCES = {
+            academics: [
+                {
+                    id: 1,
+                    title: "Academic Success Center",
+                    description: "Free tutoring services and study groups for all subjects",
+                    keywords: ["tutoring", "study", "help", "struggling", "difficult", "homework", "assignment"]
+                },
+                {
+                    id: 2,
+                    title: "Writing Center",
+                    description: "Professional writing assistance for essays, research papers, and reports",
+                    keywords: ["writing", "essay", "paper", "research", "grammar", "citation"]
+                },
+                {
+                    id: 3,
+                    title: "Library Study Rooms",
+                    description: "Quiet study spaces and group study rooms available for booking",
+                    keywords: ["quiet", "study", "space", "library", "focus", "concentration"]
+                },
+                {
+                    id: 4,
+                    title: "Time Management Workshops",
+                    description: "Learn effective time management and organizational skills",
+                    keywords: ["time", "management", "organize", "schedule", "overwhelmed", "stress"]
+                },
+                {
+                    id: 5,
+                    title: "Exam Preparation Resources",
+                    description: "Study guides, practice tests, and exam strategies",
+                    keywords: ["exam", "test", "preparation", "study", "anxiety", "strategies"]
+                },
+                {
+                    id: 6,
+                    title: "Academic Counseling",
+                    description: "One-on-one counseling for academic planning and course selection",
+                    keywords: ["counseling", "planning", "confused", "major", "courses", "advisor"]
+                }
+            ],
+            financial: [
+                {
+                    id: 7,
+                    title: "Financial Aid Office",
+                    description: "Assistance with FAFSA, grants, loans, and scholarship applications",
+                    keywords: ["fafsa", "grants", "loans", "scholarship", "money", "financial", "aid"]
+                },
+                {
+                    id: 8,
+                    title: "Emergency Financial Assistance",
+                    description: "Short-term financial help for students facing unexpected expenses",
+                    keywords: ["emergency", "urgent", "bills", "rent", "food", "crisis"]
+                },
+                {
+                    id: 9,
+                    title: "Work-Study Program",
+                    description: "On-campus employment opportunities for eligible students",
+                    keywords: ["work", "job", "employment", "campus", "part-time", "income"]
+                },
+                {
+                    id: 10,
+                    title: "Budget Counseling",
+                    description: "Learn how to manage your money and create a student budget",
+                    keywords: ["budget", "spending", "save", "money", "manage", "expenses"]
+                },
+                {
+                    id: 11,
+                    title: "Scholarship Database",
+                    description: "Searchable database of available scholarships and grants",
+                    keywords: ["scholarship", "grants", "free", "money", "awards", "merit"]
+                },
+                {
+                    id: 12,
+                    title: "Textbook Assistance Program",
+                    description: "Textbook vouchers and rental programs for students in need",
+                    keywords: ["textbook", "books", "expensive", "rental", "voucher", "materials"]
+                }
+            ],
+            programs: [
+                {
+                    id: 13,
+                    title: "Career Services Center",
+                    description: "Resume building, interview preparation, and job placement assistance",
+                    keywords: ["career", "job", "resume", "interview", "internship", "future"]
+                },
+                {
+                    id: 14,
+                    title: "Student Mentorship Program",
+                    description: "Connect with upperclassmen mentors for guidance and support",
+                    keywords: ["mentor", "guidance", "support", "connect", "advice", "peer"]
+                },
+                {
+                    id: 15,
+                    title: "Study Abroad Office",
+                    description: "Information and assistance for international study opportunities",
+                    keywords: ["abroad", "international", "travel", "exchange", "global", "culture"]
+                },
+                {
+                    id: 16,
+                    title: "Leadership Development Program",
+                    description: "Develop leadership skills through workshops and experiences",
+                    keywords: ["leadership", "skills", "development", "grow", "lead", "manage"]
+                },
+                {
+                    id: 17,
+                    title: "Research Opportunities Program",
+                    description: "Undergraduate research positions with faculty members",
+                    keywords: ["research", "faculty", "undergraduate", "science", "project", "lab"]
+                },
+                {
+                    id: 18,
+                    title: "Community Service Program",
+                    description: "Volunteer opportunities and service-learning courses",
+                    keywords: ["volunteer", "service", "community", "help", "give", "contribute"]
+                }
+            ]
+        };
+
+        // Question sets for each category
+        const QUESTIONS = {
+            academics: [
+                "What in academics are bothering you right now?",
+                "How do you handle stressful times?",
+                "What are some of your study techniques?"
+            ],
+            financial: [
+                "What financial challenges are you currently facing?",
+                "How do you currently manage your expenses?",
+                "What type of financial support are you looking for?"
+            ],
+            programs: [
+                "What are your career goals and interests?",
+                "What kind of experiences are you hoping to gain?",
+                "How do you prefer to learn and grow?"
+            ]
+        };
+
+        const UniGuideApp = () => {
+            const [currentPage, setCurrentPage] = useState('home');
+            const [selectedCategory, setSelectedCategory] = useState('');
+            const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+            const [currentQuestion, setCurrentQuestion] = useState(0);
+            const [answers, setAnswers] = useState([]);
+            const [currentAnswer, setCurrentAnswer] = useState('');
+            const [recommendations, setRecommendations] = useState([]);
+            const [noMatches, setNoMatches] = useState(false);
+            const [dynamicTitle, setDynamicTitle] = useState('');
+            const [titleIndex, setTitleIndex] = useState(0);
+
+            const titleTexts = [
+                "UniGuide",
+                "Your online resource director", 
+                "Simple and Fast"
+            ];
+
+            // Dynamic title effect
+            useEffect(() => {
+                if (currentPage !== 'home') return;
+                
+                const currentText = titleTexts[titleIndex];
+                let charIndex = 0;
+                let isTyping = true;
+                
+                const typeInterval = setInterval(() => {
+                    if (isTyping) {
+                        if (charIndex <= currentText.length) {
+                            setDynamicTitle(currentText.slice(0, charIndex));
+                            charIndex++;
+                        } else {
+                            isTyping = false;
+                            setTimeout(() => {
+                                charIndex = currentText.length;
+                                isTyping = false;
+                            }, 2000);
+                        }
+                    } else {
+                        if (charIndex > 0) {
+                            charIndex--;
+                            setDynamicTitle(currentText.slice(0, charIndex));
+                        } else {
+                            clearInterval(typeInterval);
+                            setTitleIndex((prev) => (prev + 1) % titleTexts.length);
+                        }
+                    }
+                }, isTyping ? 150 : 100);
+
+                return () => clearInterval(typeInterval);
+            }, [titleIndex, currentPage]);
+
+
+            // Function to find matching resources based on keywords
+            const findRecommendations = (allAnswers) => {
+                const resources = RESOURCES[selectedCategory];
+                const combinedText = allAnswers.join(' ').toLowerCase();
+                
+                const matches = resources.filter(resource => {
+                    return resource.keywords.some(keyword => 
+                        combinedText.includes(keyword.toLowerCase())
+                    );
+                });
+                
+                // Check if we found matches
+                if (matches.length > 0) {
+                    setNoMatches(false);
+                    return matches;
+                } else {
+                    setNoMatches(true);
+                    return resources.slice(0, 3); // Return first 3 as default
+                }
+            };
+
+            const handleCategorySubmit = () => {
+                if (selectedCategory) {
+                    setCurrentPage('questions');
+                    setCurrentQuestion(0);
+                    setAnswers([]);
+                }
+            };
+
+            const handleAnswerSubmit = () => {
+                if (currentAnswer.trim()) {
+                    const newAnswers = [...answers, currentAnswer];
+                    setAnswers(newAnswers);
+                    setCurrentAnswer('');
+                    
+                    if (currentQuestion < QUESTIONS[selectedCategory].length - 1) {
+                        setCurrentQuestion(currentQuestion + 1);
+                    } else {
+                        // All questions answered, generate recommendations
+                        const recs = findRecommendations(newAnswers);
+                        setRecommendations(recs);
+                        setCurrentPage('results');
+                    }
+                }
+            };
+
+            const resetApp = () => {
+                setCurrentPage('home');
+                setSelectedCategory('');
+                setCurrentQuestion(0);
+                setAnswers([]);
+                setCurrentAnswer('');
+                setRecommendations([]);
+                setIsDropdownOpen(false);
+                setNoMatches(false);
+                setTitleIndex(0);
+                setDynamicTitle('');
+            };
+
+            const Header = () => (
+                <div className="header">
+                    <div className="logo">
+                        <img src="../images/resourcesLogo.png" alt="resourcesLogo" className="logo-svg" width="60" height="60" />
+                        <span className="logo-title">UniGuide</span>
+                    </div>
+                    <nav className="nav">
+                        <button 
+                            onClick={() => setCurrentPage('home')}
+                            className="nav-button"
+                        >
+                            🏠 Home
+                        </button>
+                        <button 
+                            onClick={() => setCurrentPage('resources')}
+                            className="nav-button"
+                        >
+                            📚 Resources
+                        </button>
+                        <button className="nav-button">
+                            👤 Sign In
+                        </button>
+                    </nav>
+                </div>
+            );
+
+            const HomePage = () => (
+                <div className="home-page">
+                    <h1 className="app-title">
+                        {dynamicTitle}<span className="cursor">|</span>
+                    </h1>
+                    
+                    <div className="main-card">
+                        <h2 className="main-question">
+                            How can we assist you today?
+                        </h2>
+                        
+                        <div className="form-row">
+                            <div className="dropdown-container">
+                                <button
+                                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                    className="dropdown-button"
+                                >
+                                    <span>
+                                        {selectedCategory ? selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1) : 'Select a category...'}
+                                    </span>
+                                    <span className={`dropdown-arrow ${isDropdownOpen ? 'open' : ''}`}>▼</span>
+                                </button>
+                                
+                                {isDropdownOpen && (
+                                    <div className="dropdown-menu">
+                                        {['academics', 'financial aid', 'programs'].map((option) => (
+                                            <button
+                                                key={option}
+                                                onClick={() => {
+                                                    setSelectedCategory(option === 'financial aid' ? 'financial' : option);
+                                                    setIsDropdownOpen(false);
+                                                }}
+                                                className="dropdown-item"
+                                            >
+                                                {option.charAt(0).toUpperCase() + option.slice(1)}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                            
+                            <button
+                                onClick={handleCategorySubmit}
+                                disabled={!selectedCategory}
+                                className="submit-button"
+                            >
+                                →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const QuestionsPage = () => (
+                <div className="questions-page">
+                    <div className="main-card">
+                        <div className="progress-header">
+                            <h2 className="progress-title">
+                                Question {currentQuestion + 1} of {QUESTIONS[selectedCategory].length}
+                            </h2>
+                            <div className="progress-category">
+                                {selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}
+                            </div>
+                        </div>
+                        
+                        <div className="progress-bar-container">
+                            <div 
+                                className="progress-bar"
+                                style={{width: `${((currentQuestion + 1) / QUESTIONS[selectedCategory].length) * 100}%`}}
+                            />
+                        </div>
+
+                        <h3 className="question-text">
+                            {QUESTIONS[selectedCategory][currentQuestion]}
+                        </h3>
+                        
+                        <div>
+                            <textarea
+                                value={currentAnswer}
+                                onChange={(e) => setCurrentAnswer(e.target.value)}
+                                placeholder="Type your answer here..."
+                                className="answer-textarea"
+                            />
+                            
+                            <div className="button-row">
+                                <button
+                                    onClick={resetApp}
+                                    className="secondary-button"
+                                >
+                                    Start Over
+                                </button>
+                                
+                                <button
+                                    onClick={handleAnswerSubmit}
+                                    disabled={!currentAnswer.trim()}
+                                    className="primary-button"
+                                >
+                                    <span>{currentQuestion < QUESTIONS[selectedCategory].length - 1 ? 'Next' : 'Get Recommendations'}</span>
+                                    <span>→</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const ResultsPage = () => (
+                <div className="results-page">
+                    <div className="results-container">
+                        <div className="results-header">
+                            <h1 className="results-title">
+                                Your Personalized Resources
+                            </h1>
+                            {noMatches && (
+                                <div className="no-matches-notice">
+                                    <p>⚠️ We couldn't find specific matches for your responses, so here are our top recommended resources for {selectedCategory}:</p>
+                                </div>
+                                
+                            )}
+                            <p className="results-subtitle">
+                                Based on your responses, here are the best resources for you
+                            </p>
+                        </div>
+
+                        <div className="resources-grid">
+                            {recommendations.map((resource) => (
+                                <div key={resource.id} className="resource-card">
+                                    <h3 className="resource-title">
+                                        {resource.title}
+                                    </h3>
+                                    <p className="resource-description">
+                                        {resource.description}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>  
+                        <div className="center-button">
+                            <button
+                                onClick={resetApp}
+                                className="large-button"
+                            >
+                                Get More Recommendations
+                            </button>
+                            <button
+    onClick={() => window.location.href = 'chatbot.html'}
+    className="large-button secondary-large"
+    style={{marginLeft: '1rem'}}
+>
+    Get Access to Our AI Chatbot Resources
+</button>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const ResourcesPage = () => (
+                <div className="results-page">
+                    <div className="results-container">
+                        <div className="results-header">
+                            <h1 className="results-title">All Resources</h1>
+                        </div>
+                        
+                        {Object.entries(RESOURCES).map(([category, resources]) => (
+                            <div key={category} style={{marginBottom: '3rem'}}>
+                                <h2 style={{fontSize: '1.875rem', fontWeight: '600', marginBottom: '1.5rem', color: 'rgb(45, 0, 1)', textTransform: 'capitalize'}}>
+                                    {category === 'financial' ? 'Financial Aid' : category}
+                                </h2>
+                                <div className="resources-grid">
+                                    {resources.map((resource) => (
+                                        <div key={resource.id} className="resource-card">
+                                            <h3 className="resource-title">
+                                                {resource.title}
+                                            </h3>
+                                            <p className="resource-description" style={{fontSize: '0.875rem'}}>
+                                                {resource.description}
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+
+            return (
+                <div className="container">
+                    <Header />
+                    
+                    {currentPage === 'home' && <HomePage />}
+                    {currentPage === 'questions' && <QuestionsPage />}
+                    {currentPage === 'results' && <ResultsPage />}
+                    {currentPage === 'resources' && <ResourcesPage />}
+                </div>
+            );
+        };
+
+        ReactDOM.render(<UniGuideApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>

@@ -218,6 +218,15 @@
   "workspace": {
     "dependencies": [
       "npm:groq-sdk@0.30"
-    ]
+    ],
+    "packageJson": {
+      "dependencies": [
+        "npm:@types/react-dom@^19.1.7",
+        "npm:@types/react@^19.1.10",
+        "npm:lucide-react@0.539",
+        "npm:react-dom@^19.1.1",
+        "npm:react@^19.1.1"
+      ]
+    }
   }
 }
