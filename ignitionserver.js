@@ -1,10 +1,27 @@
 
 // Ignition Hacks v6
 // Basic Deno server for serving static web pages
-// run using command: deno run --allow-read --allow-net ignitionserver.js
+// run using command: deno run --allow-read --allow-net --allow-env ignitionserver.js
+
+import Groq from "groq-sdk";
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 const status_NOT_FOUND = 404;
 const status_OK = 200;
+const status_NOT_IMPLEMENTED = 501;
+
+// groq API implementation how-to: https://console.groq.com/docs/quickstart
+async function getGroqChatCompletion() {
+  return groq.chat.completions.create({
+    messages: [
+      {
+        role: "user",
+        content: "List resources related to academic support for computer science majors at Waterloo University", // customize this based on user-input
+      },
+    ],
+    model: "openai/gpt-oss-20b",
+  });
+}
 
 async function retrieveFileData(path) {
     var contents, status, contentType;
@@ -28,16 +45,44 @@ async function retrieveFileData(path) {
     return { contents, status, contentType };
 }
 
-async function handler(request) {
+async function route(request, path) {
+    if (request.method === "GET") {
+        if (path === "/") {
+            path = "/index.html";
+        }
 
-    var originalPath = new URL(request.url).pathname;    
-    var path = originalPath;
-    
-    if (path === "/") {
-        path = "/index.html";
+        var response = await retrieveFileData(path);
+
+        return response;
+
+    } else if (request.method === "POST") {
+        if (path === "/sendPrompt") {
+            const chatCompletion = await getGroqChatCompletion();
+            // Print the completion to console -- need to change this into response that gets returned to user
+            console.log(chatCompletion.choices[0]?.message?.content || "");
+            // console.log(chatCompletion); // test
+        
+            return {
+            contents: "Successful connection to Groq",
+            status: status_OK,
+            contentType: "text/plain"
+            };
+            
+        }        
+
+    } else {
+        return {
+            contents: "Unable to implement method.",
+            status: status_NOT_IMPLEMENTED,
+            contentType: "text/plain"
+        };
     }
-    
-    var response = await retrieveFileData(path);
+}
+
+async function handler(request) {
+    var originalPath = new URL(request.url).pathname;
+    var path = originalPath;
+    var response = await route(request, path);
 
     console.log(`${response.status} ${request.method} ${originalPath} ${path}`); 
 
