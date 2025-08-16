@@ -58,11 +58,11 @@ async function route(request, path) {
 
     } else if (request.method === "POST") {
         if (path === "/sendPrompt") {
-            var body = await request.formData();
-            var input = body.get("aiprompt");
+            var body = await request.json();
+            console.log("JSON BODY TEST: " + body);
             var contentInit = "";
-            // console.log(input);
-            const chatCompletion = await getGroqChatCompletion(input);
+    
+            const chatCompletion = await getGroqChatCompletion(body);
             // Print the completion to console -- need to change this into response that gets returned to user
             // console.log(chatCompletion.choices[0]?.message?.content || "");
             // console.log(chatCompletion); // test
