@@ -49,7 +49,7 @@ async function retrieveFileData(path) {
 async function route(request, path) {
     if (request.method === "GET") {
         if (path === "/") {
-            path = "/index.html";
+            path = "/src/index.html";
         }
 
         var response = await retrieveFileData(path);
